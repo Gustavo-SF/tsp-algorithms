@@ -1,0 +1,22 @@
+# Poetry lock files so it doesn't create OS dependency problems.
+poetry.lock
+
+# Python
+__pycache__/
+
+# Compiled C files
+*.so
+
+# Build folder
+build/
+*.egg-info/
+dist/
+
+# VSCode
+.vscode/
+
+# Pytest cache
+.pytest_cache/
+
+# Env files
+.env
