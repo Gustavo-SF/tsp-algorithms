@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tsp_algorithms"
-version = "0.1.1"
+version = "0.1.2"
 description = "TSP Algorithms developed as C extension for Python"
 license = "MIT"
 authors = ["Gustavo-SF <gustavo.fonseca@outlook.pt>"]
@@ -10,6 +10,7 @@ keywords = ["tsp", "algorithms", "c", "python"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: Implementation :: CPython",
 ]

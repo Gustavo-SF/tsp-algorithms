@@ -20,3 +20,6 @@ dist/
 
 # Env files
 .env
+
+# Python env
+venv/
