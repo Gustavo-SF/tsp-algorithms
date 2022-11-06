@@ -1,15 +1,11 @@
 name: wheels
 
-on:
-  push:
-    branches:
-        - main
-    tags:
-        - "refs/tags*"
+on: [release]
 
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
+    if: github.event_name == 'push'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
