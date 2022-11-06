@@ -1,6 +1,6 @@
 name: wheels
 
-on: [push]
+on: push
 
 jobs:
   build_wheels:
@@ -8,19 +8,33 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.1.1
+        uses: joerick/cibuildwheel@v2.11.1
+        with:
+          output-dir: wheelhouse
+        # to supply options, put them in 'env', like:
         env:
-          CIBW_SKIP: "{cp27-*,cp36-*,cp37-*,pp*,cp38-macosx_arm64}"
-          CIBW_ARCHS_WINDOWS: auto64
-          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_BUILD: "{cp38-*}"
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest {project}/test"
+          CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_LINUX: "auto aarch64"
+
+      - name: Show built files
+        shell: bash
+        run: ls -la wheelhouse
 
       - uses: actions/upload-artifact@v3
         with:
@@ -29,12 +43,18 @@ jobs:
 
   deploy:
     name: Uploading to PyPi
-    if: startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     needs: [build_wheels]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Build sdist
+        run: python setup.py sdist
 
       - name: Download wheels
         uses: actions/download-artifact@v3
