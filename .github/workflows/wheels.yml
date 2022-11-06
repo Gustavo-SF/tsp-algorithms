@@ -16,7 +16,7 @@ jobs:
       - name: Build wheels
         uses: joerick/cibuildwheel@v2.1.1
         env:
-          CIBW_SKIP: "{cp27-*,cp36-*,cp37-*,pp*,cp38-macosx_arm64}"
+          CIBW_SKIP: "{cp27-*,cp36-*,cp37-*,pp*}"
           CIBW_ARCHS_WINDOWS: auto64
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_TEST_REQUIRES: pytest
