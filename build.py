@@ -1,6 +1,5 @@
 from setuptools.extension import Extension
 from wheel.bdist_wheel import bdist_wheel
-import sys
 
 
 custom_extension = Extension(
