@@ -8,7 +8,6 @@ custom_extension = Extension(
     sources=['tsp_algorithms/lib/tsp.c', 'tsp_algorithms/lib/nearest_neighbors.c'],
     define_macros=[("Py_LIMITED_API", "0x03060000")],
     py_limited_api=True,
-    extra_compile_args=['/d2FH4-'] if sys.platform == 'win32' else []
 )
 
 
