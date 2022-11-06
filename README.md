@@ -6,9 +6,9 @@ In a VRP problem, the objective is to find the best route for a fleet of vehicle
 
 ## Install
 
-For now, I am still testing the package, but you can install via pip:
+You can install via pip:
 ```bash
-pip install --index-url https://test.pypi.org/simple/ tsp-algorithms
+pip install tsp-algorithms
 ```
 
 ## Usage
