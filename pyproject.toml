@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tsp_algorithms"
-version = "0.1.2"
+version = "0.1.4"
 description = "TSP Algorithms developed as C extension for Python"
 license = "MIT"
 authors = ["Gustavo-SF <gustavo.fonseca@outlook.pt>"]
@@ -17,7 +17,7 @@ classifiers = [
 build = "build.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "setuptools"]
+requires = ["poetry-core>=1.0.0", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]

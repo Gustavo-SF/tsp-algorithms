@@ -1,11 +1,24 @@
 from setuptools.extension import Extension
+from wheel.bdist_wheel import bdist_wheel
 
 
 custom_extension = Extension(
     'tsp_algorithms.ctsp',
-    sources=['lib/tsp.c', 'lib/nearest_neighbors.c'],
-    define_macros=[("PY_SSIZE_T_CLEAN",)],
+    sources=['tsp_algorithms/lib/tsp.c', 'tsp_algorithms/lib/nearest_neighbors.c'],
+    define_macros=[("Py_LIMITED_API", "0x03060000")],
+    py_limited_api=True,
 )
+
+
+class bdist_wheel_abi3(bdist_wheel):
+    def get_tag(self):
+        python, abi, plat = super().get_tag()
+
+        if python.startswith("cp"):
+            # on CPython, our wheels are abi3 and compatible back to 3.6
+            return "cp38", "abi3", plat
+
+        return python, abi, plat
 
 
 def build(setup_kwargs):
@@ -17,5 +30,6 @@ def build(setup_kwargs):
         {
             # declare the extension so that setuptools will compile it
             "ext_modules": [custom_extension],
+            "cmdclass": {"bdist_wheel": bdist_wheel_abi3},
         }
     )
