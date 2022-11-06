@@ -18,7 +18,7 @@ jobs:
         env:
           CIBW_SKIP: "{cp27-*,cp36-*,cp37-*,pp*}"
           CIBW_ARCHS_WINDOWS: auto64
-          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ARCHS_MACOS: universal2
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest {project}/test"
           CIBW_BUILD_VERBOSITY: 1
