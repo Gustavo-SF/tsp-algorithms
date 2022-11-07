@@ -1,7 +1,50 @@
-#include <stdlib.h>
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include "./include/nearest_neighbors.h"
+#include "./include/metrics.h"
+#include "./include/algorithms.h"
+
+
+static PyObject *method_route_cost(PyObject *self, PyObject *args) {
+    PyObject *cost_matrix;
+    PyObject *route;
+    int n;
+
+    if (!PyArg_ParseTuple(args, "OOi", &cost_matrix, &route, &n)) {
+        return NULL;
+    }
+
+    float **cost_matrix_2d = (float **)malloc(n * sizeof(float *));
+    for (int i = 0; i < n; i++) {
+        cost_matrix_2d[i] = (float *)malloc(n * sizeof(float));
+    }
+
+    for (int i = 0; i < n; i++) {
+        PyObject *row = PyList_GetItem(cost_matrix, i);
+        for (int j = 0; j < n; j++) {
+            PyObject *item = PyList_GetItem(row, j);
+            cost_matrix_2d[i][j] = PyFloat_AsDouble(item);
+            if (PyErr_Occurred()) {
+                PyErr_SetString(PyExc_TypeError, "Cost matrix must be a list of lists of numbers.");
+                return NULL;
+            }
+        }
+    }
+
+    int *route_1d = (int *)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        PyObject *item = PyList_GetItem(route, i);
+        route_1d[i] = PyLong_AsLong(item);
+        if (PyErr_Occurred()) {
+            PyErr_SetString(PyExc_TypeError, "Route must be a list of integers.");
+            return NULL;
+        }
+    }
+
+    float cost = route_cost(cost_matrix_2d, route_1d, n);
+
+    return Py_BuildValue("f", cost);
+}
 
 
 // Wrap the nearest neighbor algorithm in a python function
@@ -27,11 +70,11 @@ static PyObject *method_nearest_neighbors(PyObject *self, PyObject *args) {
         cost_matrix_c[i] = (float *)malloc(n * sizeof(float));
         for (j = 0; j < n; j++) {
             cost = PyList_GetItem(row_cost_matrix, j);
-            if(!PyFloat_Check(cost)) {
-                PyErr_SetString(PyExc_TypeError, "list items must be float.");
+            cost_matrix_c[i][j] = PyFloat_AsDouble(cost);
+            if (PyErr_Occurred()) {
+                PyErr_SetString(PyExc_TypeError, "Cost matrix must be a list of lists of numbers.");
                 return NULL;
             }
-            cost_matrix_c[i][j] = PyFloat_AsDouble(cost);
         }
     }
 
@@ -51,6 +94,7 @@ static PyObject *method_nearest_neighbors(PyObject *self, PyObject *args) {
 
 static PyMethodDef TSPMethods[] = {
     {"nn", method_nearest_neighbors, METH_VARARGS, "Python interface for calculating Nearest Neighbours solution to the TSP problem"},
+    {"route_cost", method_route_cost, METH_VARARGS, "Python interface for calculating the cost of a route"},
     {NULL, NULL, 0, NULL}
 };
 

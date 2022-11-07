@@ -1,16 +1,7 @@
 #include <stdlib.h>
 
-#include "./include/nearest_neighbors.h"
-
-
-// Calculate the route cost given a cost matrix
-float route_cost(float **cost_matrix, int *route, int n){
-    float cost = 0;
-    for (int i = 0; i < n; i++){
-        cost += cost_matrix[route[i]][route[(i+1)%n]];
-    }
-    return cost;
-};
+#include "./include/metrics.h"
+#include "./include/algorithms.h"
 
 // Wrapper to generate a route using the nearest neighbor algorithm
 int *nearest_neighbors(float **cost_matrix, int n){
