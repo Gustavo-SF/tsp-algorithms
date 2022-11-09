@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tsp_algorithms"
-version = "0.1.0"
+version = "0.2.0"
 description = "TSP Algorithms developed as C extension for Python"
 license = "MIT"
 authors = ["Gustavo-SF <gustavo.fonseca@outlook.pt>"]
