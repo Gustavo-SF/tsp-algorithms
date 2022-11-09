@@ -3,7 +3,7 @@
 #include "./include/metrics.h"
 #include "./include/algorithms.h"
 
-// Wrapper to generate a route using the nearest neighbor algorithm
+// Generate a route using the nearest neighbor algorithm
 int *nearest_neighbors(float **cost_matrix, int n){
     int *route = (int *)malloc(n * sizeof(int));
     int *current_route = (int *)malloc(n * sizeof(int));
@@ -37,4 +37,48 @@ int *nearest_neighbors(float **cost_matrix, int n){
         }
     }
     return route;
+};
+
+// Run the two opt algorithm on a route
+int *two_opt(float **cost_matrix, int *route, int n){
+    int *route_list = (int *)malloc(n * sizeof(int));
+    int *best_route = (int *)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++){
+        route_list[i] = route[i];
+        best_route[i] = route[i];
+    }
+    int improved = 1;
+    while (improved){
+        improved = 0;
+        for (int i = 0; i < n - 1; i++){
+            for (int j = i + 1; j < n; j++){
+                if (j - i == 1){
+                    continue; // changes nothing, skip then
+                }
+                int *new_route = (int *)malloc(n * sizeof(int));
+                for (int k = 0; k < n; k++){
+                    new_route[k] = route_list[k];
+                }
+                int *temp = (int *)malloc((j - i) * sizeof(int));
+                for (int k = 0; k < j - i; k++){
+                    temp[k] = route_list[i + k];
+                }
+                for (int k = 0; k < j - i; k++){
+                    new_route[i + k] = temp[j - i - k - 1];
+                }
+                float fit = route_cost(cost_matrix, new_route, n);
+                float best_fit = route_cost(cost_matrix, best_route, n);
+                if (fit < best_fit){
+                    for (int k = 0; k < n; k++){
+                        best_route[k] = new_route[k];
+                    }
+                    improved = 1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++){
+            route_list[i] = best_route[i];
+        }
+    }
+    return best_route;
 };

@@ -91,10 +91,69 @@ static PyObject *method_nearest_neighbors(PyObject *self, PyObject *args) {
 };
 
 
+// Wrap the two opt algorithm in a python function
+static PyObject *method_two_opt(PyObject *self, PyObject *args) {
+
+    /* Parse arguments */
+    PyObject *cost_matrix;
+    PyObject *row_cost_matrix;
+    PyObject *cost;
+    PyObject *route;
+    PyObject *node;
+    Py_ssize_t n, cost_n;
+    int i, j;
+
+    if (!PyArg_ParseTuple(args, "O!O!", &PyList_Type, &cost_matrix, &PyList_Type, &route)) {
+        PyErr_SetString(PyExc_TypeError, "parameters must be lists.");
+        return NULL;
+    }
+    cost_n = PyList_Size(cost_matrix);
+    n = PyList_Size(route);
+
+    // Read a list of list of floats
+    float **cost_matrix_c = (float **)malloc(cost_n * sizeof(float *));
+    for (i = 0; i < cost_n; i++) {
+        row_cost_matrix = PyList_GetItem(cost_matrix, i);
+        cost_matrix_c[i] = (float *)malloc(cost_n * sizeof(float));
+        for (j = 0; j < cost_n; j++) {
+            cost = PyList_GetItem(row_cost_matrix, j);
+            cost_matrix_c[i][j] = PyFloat_AsDouble(cost);
+            if (PyErr_Occurred()) {
+                PyErr_SetString(PyExc_TypeError, "Cost matrix must be a list of lists of numbers.");
+                return NULL;
+            }
+        }
+    }
+
+    // Read a list of integers
+    int *route_c = (int *)malloc(n * sizeof(int));
+    for (i = 0; i < n; i++) {
+        node = PyList_GetItem(route, i);
+        route_c[i] = PyLong_AsLong(node);
+        if (PyErr_Occurred()) {
+            PyErr_SetString(PyExc_TypeError, "Route must be a list of integers.");
+            return NULL;
+        }
+    }
+
+    /* Call the C function */
+    int *new_route = two_opt(cost_matrix_c, route_c, n);
+
+    /* Convert the C array to a Python list */
+    PyObject *py_route = PyList_New(n);
+    for (i=0; i<n; i++) {
+        PyList_SetItem(py_route, i, PyLong_FromLong(new_route[i]));
+    }
+
+    return py_route;
+};
+
+
 
 static PyMethodDef TSPMethods[] = {
     {"nn", method_nearest_neighbors, METH_VARARGS, "Python interface for calculating Nearest Neighbours solution to the TSP problem"},
     {"route_cost", method_route_cost, METH_VARARGS, "Python interface for calculating the cost of a route"},
+    {"two_opt", method_two_opt, METH_VARARGS, "Python interface for calculating the 2-opt solution to the TSP problem"},
     {NULL, NULL, 0, NULL}
 };
 

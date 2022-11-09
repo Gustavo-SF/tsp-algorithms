@@ -17,6 +17,11 @@ class TestTSPAlgorithms(unittest.TestCase):
         route = tsp.nn(cost_matrix)
         assert route == [1, 3, 5, 2, 4, 0]
     
+    def test_2opt(self):
+        route = [1, 3, 5, 2, 4, 0]
+        route_opt = tsp.two_opt(cost_matrix, route)
+        assert route_opt == [1, 3, 5, 4, 2, 0]
+    
 
 if __name__ == '__main__':
     unittest.main()
